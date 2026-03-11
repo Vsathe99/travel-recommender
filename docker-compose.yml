@@ -1,0 +1,71 @@
+version: "3.9"
+
+services:
+  # ── MongoDB ───────────────────────────────────────────────────────────────
+  mongodb:
+    image: mongo:7
+    container_name: travel_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: travel_recommendation
+    networks:
+      - travel_net
+
+  # ── Redis ─────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: travel_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - travel_net
+
+  # ── Backend ───────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: travel_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      MONGO_URI: mongodb://mongodb:27017
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./backend:/app
+    networks:
+      - travel_net
+
+  # ── Frontend ──────────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8000
+    container_name: travel_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - travel_net
+
+volumes:
+  mongo_data:
+
+networks:
+  travel_net:
+    driver: bridge
