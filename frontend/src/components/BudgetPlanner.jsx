@@ -2,11 +2,11 @@ import { FiCheckCircle, FiAlertTriangle, FiInfo } from 'react-icons/fi'
 import { formatCurrency } from '../utils/helpers'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 
-const COLORS = ['#3b82f6', '#06b6d4', '#f97316', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444']
+const COLORS = ['#3b82f6', '#06b6d4', '#f97316', '#10b981', '#8b5cf6']
 
 const CATEGORY_ICONS = {
   accommodation: '🏨', flights: '✈️', food: '🍽️',
-  activities: '🎭', local_transport: '🚕', shopping: '🛍️', miscellaneous: '💰',
+  activities: '🎭', local_transport: '🚕',
 }
 
 export default function BudgetPlanner({ budget }) {

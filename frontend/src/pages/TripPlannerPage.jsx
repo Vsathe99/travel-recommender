@@ -17,7 +17,7 @@ export default function TripPlannerPage() {
   const [form, setForm] = useState({
     destination: initDest,
     duration: 5,
-    budget: 1500,
+    budget: 50000,
     travel_type: ['city'],
     travel_companions: 'solo',
     travel_style: 'mid-range',
@@ -133,9 +133,9 @@ export default function TripPlannerPage() {
 
             <div>
               <label className="block text-white/70 text-sm mb-1.5 flex items-center gap-1">
-                <FiDollarSign className="w-3.5 h-3.5" /> Budget: ${form.budget.toLocaleString()}
+                <FiDollarSign className="w-3.5 h-3.5" /> Budget: ₹{form.budget.toLocaleString('en-IN')}
               </label>
-              <input type="range" min={200} max={20000} step={100} value={form.budget}
+              <input type="range" min={5000} max={500000} step={1000} value={form.budget}
                 onChange={(e) => setForm(f => ({ ...f, budget: Number(e.target.value) }))}
                 className="w-full accent-green-500" />
             </div>

@@ -13,11 +13,11 @@ class ItineraryDay(BaseModel):
 
 
 class BudgetBreakdown(BaseModel):
-    hotel: float
-    transport: float
+    accommodation: float
+    flights: float
     food: float
     activities: float
-    miscellaneous: float
+    local_transport: float
     total: float
     currency: str = "INR"
 
