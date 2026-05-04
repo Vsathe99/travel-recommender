@@ -47,10 +47,10 @@ export const userAPI = {
 export const travelAPI = {
     recommend: (data) => api.post('/recommend-destination', data),
     searchLocation: (query) => api.get('/search-location', { params: { query } }),
-    getDestination: (city) => api.get(`/destination/${encodeURIComponent(city)}`),
-    getRestaurants: (city) => api.get(`/destination/${encodeURIComponent(city)}/restaurants`),
-    getAccommodations: (city) => api.get(`/destination/${encodeURIComponent(city)}/accommodations`),
-    getAttractions: (city, category) => api.get(`/attractions/${encodeURIComponent(city)}`, { params: { category } }),
+    getDestination: (city, country) => api.get(`/destination/${encodeURIComponent(city)}`, { params: { country: country || undefined } }),
+    getRestaurants: (city, country) => api.get(`/destination/${encodeURIComponent(city)}/restaurants`, { params: { country: country || undefined } }),
+    getAccommodations: (city, country) => api.get(`/destination/${encodeURIComponent(city)}/accommodations`, { params: { country: country || undefined } }),
+    getAttractions: (city, category, country) => api.get(`/attractions/${encodeURIComponent(city)}`, { params: { category, country: country || undefined } }),
     getWeather: (city) => api.get(`/weather/${encodeURIComponent(city)}`),
     getImages: (city, count = 12) => api.get(`/images/${encodeURIComponent(city)}`, { params: { count } }),
     generateItinerary: (data) => api.post('/generate-itinerary', data),
@@ -74,6 +74,22 @@ export const adminAPI = {
     getTrips: (page = 1) => api.get('/admin/trips', { params: { page } }),
     deleteUser: (id) => api.delete(`/admin/users/${id}`),
     makeAdmin: (id) => api.put(`/admin/users/${id}/make-admin`),
+}
+
+// ── Interactions (CF training data) ─────────────────────────────────────────
+export const interactionAPI = {
+    log: (data) => api.post('/interactions', data),
+    history: () => api.get('/interactions/history'),
+    popular: () => api.get('/interactions/popular'),
+}
+
+// ── Collaborative Filtering ─────────────────────────────────────────────────
+export const cfAPI = {
+    forYou: () => api.get('/cf/for-you'),
+    similar: (destId) => api.get(`/cf/similar/${destId}`),
+    similarByName: (name) => api.get(`/cf/similar-by-name/${encodeURIComponent(name)}`),
+    train: () => api.post('/cf/train'),
+    status: () => api.get('/cf/status'),
 }
 
 export default api

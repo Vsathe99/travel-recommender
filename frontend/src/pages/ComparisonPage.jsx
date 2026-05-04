@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar'
 import ComparisonTable from '../components/ComparisonTable'
 import { travelAPI } from '../api/client'
 import toast from 'react-hot-toast'
-import { FiPlus, FiX, FiRefreshCw } from 'react-icons/fi'
+import { FiPlus, FiX, FiRefreshCw, FiBarChart2 } from 'react-icons/fi'
 
 const POPULAR = ['Paris', 'Bali', 'Tokyo', 'New York', 'Santorini', 'Maldives', 'Iceland', 'Bangkok']
 
@@ -15,8 +15,7 @@ export default function ComparisonPage() {
 
   const addCity = (city) => {
     const trimmed = city.trim()
-    if (!trimmed) return
-    if (cities.includes(trimmed)) return toast.error(`${trimmed} already added`)
+    if (!trimmed || cities.includes(trimmed)) return
     if (cities.length >= 4) return toast.error('Maximum 4 destinations')
     setCities(c => [...c, trimmed])
     setInput('')
@@ -31,70 +30,69 @@ export default function ComparisonPage() {
       const { data } = await travelAPI.compareDestinations(cities)
       setResults(data.data || [])
       toast.success('Comparison ready!')
-    } catch {
-      toast.error('Comparison failed')
-    } finally {
-      setLoading(false)
-    }
+    } catch { toast.error('Comparison failed') }
+    finally { setLoading(false) }
   }
 
   return (
     <div className="page-container">
       <Navbar />
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        <h1 className="section-title mb-2">⚖️ Destination Comparison</h1>
-        <p className="section-subtitle mb-8">Compare up to 4 destinations side-by-side</p>
+      <div className="max-w-6xl mx-auto px-6 pb-16">
+        <div className="mb-10">
+          <div className="inline-flex items-center gap-2 bg-teal-50 text-teal-600 text-xs font-semibold uppercase tracking-wider px-3 py-1.5 rounded-full mb-3">
+            <FiBarChart2 className="w-3.5 h-3.5" /> Compare
+          </div>
+          <h1 className="section-title">Compare Destinations</h1>
+          <p className="section-subtitle">Side-by-side analysis of up to 4 destinations</p>
+        </div>
 
-        {/* Input */}
-        <div className="glass-card p-6 mb-8">
+        {/* Input area */}
+        <div className="glass-gradient p-6 mb-8">
           <div className="flex gap-3 mb-4">
             <input type="text" value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && addCity(input)}
-              placeholder="Add a destination (e.g. Paris, Tokyo…)"
+              placeholder="Add a destination…"
               className="input-field" />
             <button onClick={() => addCity(input)} className="btn-primary px-5">
               <FiPlus className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Popular quick-adds */}
+          {/* Quick adds */}
           <div className="flex flex-wrap gap-2 mb-4">
-            <span className="text-white/40 text-xs self-center">Quick add:</span>
+            <span className="text-[10px] text-[#2d3142]/30 uppercase tracking-wider self-center mr-1">Quick add</span>
             {POPULAR.filter(p => !cities.includes(p)).slice(0, 6).map(p => (
               <button key={p} onClick={() => addCity(p)}
-                className="px-3 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-white/60 hover:text-white transition-all">
+                className="px-3 py-1 bg-black/[0.03] hover:bg-indigo-50 hover:text-indigo-600 rounded-full text-xs text-[#2d3142]/45 transition-all">
                 + {p}
               </button>
             ))}
           </div>
 
-          {/* Selected cities */}
+          {/* Selected */}
           {cities.length > 0 && (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {cities.map(c => (
-                <div key={c} className="flex items-center gap-2 px-3 py-1.5 bg-primary-600/20 border border-primary-500/30 rounded-full text-sm text-primary-300">
-                  <span>✈️ {c}</span>
-                  <button onClick={() => removeCity(c)} className="hover:text-red-400 transition-colors">
+                <div key={c} className="flex items-center gap-2 px-3.5 py-1.5 bg-indigo-50 text-indigo-600 rounded-full text-sm font-medium">
+                  ✈️ {c}
+                  <button onClick={() => removeCity(c)} className="hover:text-red-500 transition-colors">
                     <FiX className="w-3.5 h-3.5" />
                   </button>
                 </div>
               ))}
               {cities.length >= 2 && (
-                <button onClick={compare} disabled={loading}
-                  className="btn-primary py-2 px-5 text-sm flex items-center gap-2 ml-auto">
-                  {loading ? <span className="spinner w-4 h-4 inline-block" /> : <FiRefreshCw className="w-4 h-4" />}
-                  {loading ? 'Comparing…' : 'Compare Now'}
+                <button onClick={compare} disabled={loading} className="btn-primary py-2 px-5 text-sm ml-auto">
+                  {loading ? <span className="spinner w-4 h-4" /> : <FiRefreshCw className="w-4 h-4" />}
+                  {loading ? 'Comparing…' : 'Compare'}
                 </button>
               )}
             </div>
           )}
         </div>
 
-        {/* Results */}
         {results.length > 0 && (
           <div className="animate-slide-up">
-            <h2 className="font-display font-bold text-xl text-white mb-4">Comparison Results</h2>
             <ComparisonTable data={results} />
           </div>
         )}

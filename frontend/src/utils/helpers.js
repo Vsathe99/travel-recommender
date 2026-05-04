@@ -7,20 +7,20 @@ export const formatDate = (dateStr) => {
 }
 
 export const getScoreColor = (score) => {
-    if (score >= 8.5) return 'text-emerald-400 border-emerald-400'
-    if (score >= 7.0) return 'text-blue-400 border-blue-400'
-    if (score >= 5.5) return 'text-yellow-400 border-yellow-400'
-    return 'text-red-400 border-red-400'
+    if (score >= 8.5) return 'text-emerald-500 border-emerald-400'
+    if (score >= 7.0) return 'text-blue-500 border-blue-400'
+    if (score >= 5.5) return 'text-amber-500 border-amber-400'
+    return 'text-red-500 border-red-400'
 }
 
 export const getSuitabilityColor = (suitability) => {
     const map = {
-        Excellent: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-        Good: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-        Fair: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-        Poor: 'bg-red-500/20 text-red-400 border-red-500/30',
+        Excellent: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+        Good: 'bg-blue-50 text-blue-600 border-blue-200',
+        Fair: 'bg-amber-50 text-amber-600 border-amber-200',
+        Poor: 'bg-red-50 text-red-600 border-red-200',
     }
-    return map[suitability] || 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+    return map[suitability] || 'bg-black/[0.03] text-[#2d3142]/40 border-black/[0.05]'
 }
 
 export const getTravelTypeIcon = (type) => {

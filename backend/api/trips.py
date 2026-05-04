@@ -41,6 +41,35 @@ async def save_trip(trip: TripCreate, current_user: dict = Depends(get_current_u
         {"_id": ObjectId(current_user["sub"])},
         {"$addToSet": {"saved_trips": str(result.inserted_id)}},
     )
+
+    # Log interaction for CF model training
+    try:
+        # Find or create the destination in the catalog
+        dest = await db.destinations.find_one({"name": trip.destination})
+        dest_id = str(dest["_id"]) if dest else None
+
+        # If destination doesn't exist in catalog, save it
+        if not dest:
+            new_dest = {
+                "name": trip.destination,
+                "country": trip.country or "",
+                "travel_type": trip.travel_type or [],
+            }
+            insert_result = await db.destinations.insert_one(new_dest)
+            dest_id = str(insert_result.inserted_id)
+
+        await db.interactions.insert_one({
+            "user_id": current_user["sub"],
+            "destination_id": dest_id,
+            "destination_name": trip.destination,
+            "country": trip.country or "",
+            "interaction_type": "save",
+            "weight": 4.0,
+            "created_at": datetime.utcnow(),
+        })
+    except Exception as e:
+        pass  # Don't fail the save if interaction logging fails
+
     return success_response(
         data={"trip_id": str(result.inserted_id)},
         message="Trip saved successfully",

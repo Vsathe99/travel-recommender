@@ -51,6 +51,7 @@ checkpoints/
 *.pt
 *.pth
 *.onnx
+*.pkl
 
 # ===============================
 # LOG FILES

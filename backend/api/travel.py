@@ -38,11 +38,15 @@ async def recommend_destinations(req: RecommendationRequest, current_user: dict 
 
 
 @router.get("/destination/{city}")
-async def get_destination(city: str, current_user: dict = Depends(get_current_user)):
+async def get_destination(city: str, country: Optional[str] = None, current_user: dict = Depends(get_current_user)):
     try:
-        geo = await geocode_city(city)
-        weather = await get_current_weather(city)
-        forecast = await get_forecast(city)
+        geo = await geocode_city(city, country_hint=country or "")
+        
+        lat = geo.get("coordinates", {}).get("lat") if geo else None
+        lon = geo.get("coordinates", {}).get("lng") if geo else None
+        
+        weather = await get_current_weather(city, lat=lat, lon=lon)
+        forecast = await get_forecast(city, lat=lat, lon=lon)
         images = await get_destination_images(city, count=12)
         suitability = get_travel_suitability(weather) if weather else "Unknown"
 
@@ -59,10 +63,11 @@ async def get_destination(city: str, current_user: dict = Depends(get_current_us
 
 
 @router.get("/attractions/{city}")
-async def get_attractions(city: str, category: Optional[str] = "tourist_attraction", current_user: dict = Depends(get_current_user)):
+async def get_attractions(city: str, category: Optional[str] = "tourist_attraction", country: Optional[str] = None, current_user: dict = Depends(get_current_user)):
     try:
         from services.map_service import search_places
-        attractions = await search_places(city, category=category, limit=10)
+        search_name = f"{city}, {country}" if country else city
+        attractions = await search_places(search_name, category=category, limit=10)
         return success_response(data=attractions, message=f"Top attractions in {city}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch attractions: {str(e)}")
@@ -101,20 +106,22 @@ async def search_location_autocomplete(query: str):
 
 
 @router.get("/destination/{city}/restaurants")
-async def get_restaurants(city: str, current_user: dict = Depends(get_current_user)):
+async def get_restaurants(city: str, country: Optional[str] = None, current_user: dict = Depends(get_current_user)):
     try:
         from services.map_service import search_restaurants
-        restaurants = await search_restaurants(city, limit=10)
+        search_name = f"{city}, {country}" if country else city
+        restaurants = await search_restaurants(search_name, limit=10)
         return success_response(data=restaurants, message=f"Top restaurants in {city}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch restaurants: {str(e)}")
 
 
 @router.get("/destination/{city}/accommodations")
-async def get_accommodations(city: str, current_user: dict = Depends(get_current_user)):
+async def get_accommodations(city: str, country: Optional[str] = None, current_user: dict = Depends(get_current_user)):
     try:
         from services.map_service import search_hotels
-        hotels = await search_hotels(city, limit=5)
+        search_name = f"{city}, {country}" if country else city
+        hotels = await search_hotels(search_name, limit=5)
         return success_response(data=hotels, message=f"Top accommodations in {city}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch accommodations: {str(e)}")

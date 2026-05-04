@@ -17,111 +17,105 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
-  const handleLogout = () => {
-    logout()
-    navigate('/')
-  }
+  const handleLogout = () => { logout(); navigate('/') }
 
   if (!user) return null
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-dark-900/80 backdrop-blur-xl border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/dashboard" className="flex items-center gap-2">
-            <span className="text-2xl">✈️</span>
-            <span className="font-display font-bold text-lg text-gradient">SmartTravel</span>
-          </Link>
+    <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl">
+      <div className="glass px-5 py-2.5 flex items-center justify-between" style={{ borderRadius: '1rem' }}>
+        {/* Logo */}
+        <Link to="/dashboard" className="flex items-center gap-2 shrink-0">
+          <span className="text-xl">✈️</span>
+          <span className="font-helvetica font-bold text-base text-gradient hidden sm:inline">SmartTravel</span>
+        </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map(({ to, label, icon: Icon }) => (
-              <Link
-                key={to}
-                to={to}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                  ${location.pathname === to
-                    ? 'bg-primary-600/20 text-primary-400 border border-primary-500/30'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                  }`}
-              >
-                <Icon className="w-4 h-4" />
-                {label}
-              </Link>
-            ))}
-            {isAdmin && (
-              <Link
-                to="/admin"
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                  ${location.pathname === '/admin'
-                    ? 'bg-sunset-500/20 text-sunset-400 border border-sunset-500/30'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                  }`}
-              >
-                <FiSettings className="w-4 h-4" />
-                Admin
-              </Link>
-            )}
-          </div>
+        {/* Center Nav Pills */}
+        <div className="hidden md:flex items-center gap-0.5 bg-black/[0.03] rounded-xl p-1">
+          {navLinks.map(({ to, label, icon: Icon }) => (
+            <Link
+              key={to}
+              to={to}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-300
+                ${location.pathname === to
+                  ? 'bg-white text-indigo-600 shadow-sm'
+                  : 'text-[#2d3142]/50 hover:text-[#2d3142]/80'
+                }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {label}
+            </Link>
+          ))}
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-300
+                ${location.pathname === '/admin'
+                  ? 'bg-white text-amber-600 shadow-sm'
+                  : 'text-[#2d3142]/50 hover:text-[#2d3142]/80'
+                }`}
+            >
+              <FiSettings className="w-3.5 h-3.5" />
+              Admin
+            </Link>
+          )}
+        </div>
 
-          {/* User Menu */}
+        {/* Right: User */}
+        <div className="flex items-center gap-2">
           <div className="relative">
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-2 rounded-xl transition-all"
+              className="flex items-center gap-2 hover:bg-black/[0.03] px-2 py-1.5 rounded-xl transition-all"
             >
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary-500 to-ocean-500 flex items-center justify-center text-xs font-bold">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-xs font-bold text-white shadow-md shadow-indigo-500/20">
                 {user.name?.charAt(0).toUpperCase()}
               </div>
-              <span className="hidden sm:block text-sm text-white/80">{user.name}</span>
+              <span className="hidden sm:block text-sm text-[#2d3142]/60 font-medium">{user.name?.split(' ')[0]}</span>
             </button>
 
             {userMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 glass-card shadow-xl py-2 z-50">
-                <div className="px-4 py-2 border-b border-white/10">
-                  <p className="text-sm font-medium text-white">{user.name}</p>
-                  <p className="text-xs text-white/50">{user.email}</p>
+              <div className="absolute right-0 mt-2 w-52 glass p-1.5 z-50" style={{ borderRadius: '1rem' }}>
+                <div className="px-3 py-2.5 mb-1">
+                  <p className="text-sm font-semibold text-[#2d3142]">{user.name}</p>
+                  <p className="text-xs text-[#2d3142]/40 mt-0.5">{user.email}</p>
                 </div>
+                <div className="h-px bg-black/[0.06] mx-2 mb-1" />
                 <Link to="/dashboard" onClick={() => setUserMenuOpen(false)}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 transition-colors">
+                  className="flex items-center gap-2.5 px-3 py-2 text-sm text-[#2d3142]/60 hover:text-[#2d3142] hover:bg-black/[0.03] rounded-lg transition-all">
                   <FiUser className="w-4 h-4" /> Profile
                 </Link>
                 <button onClick={handleLogout}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors">
-                  <FiLogOut className="w-4 h-4" /> Log out
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg transition-all">
+                  <FiLogOut className="w-4 h-4" /> Sign out
                 </button>
               </div>
             )}
           </div>
 
-          {/* Mobile hamburger */}
-          <button className="md:hidden p-2" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
+          {/* Mobile */}
+          <button className="md:hidden p-1.5 text-[#2d3142]/60 hover:text-[#2d3142]" onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <FiX className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile dropdown */}
       {menuOpen && (
-        <div className="md:hidden bg-dark-900/95 border-t border-white/10 px-4 py-4 space-y-2">
+        <div className="md:hidden glass mt-2 p-2" style={{ borderRadius: '1rem' }}>
           {navLinks.map(({ to, label, icon: Icon }) => (
             <Link key={to} to={to} onClick={() => setMenuOpen(false)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all
-                ${location.pathname === to ? 'bg-primary-600/20 text-primary-400' : 'text-white/70'}`}>
+                ${location.pathname === to ? 'bg-white text-indigo-600 shadow-sm' : 'text-[#2d3142]/50'}`}>
               <Icon className="w-5 h-5" /> {label}
             </Link>
           ))}
           {isAdmin && (
             <Link to="/admin" onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-sunset-400">
-              <FiSettings className="w-5 h-5" /> Admin Panel
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-amber-600">
+              <FiSettings className="w-5 h-5" /> Admin
             </Link>
           )}
-          <button onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-red-400">
-            <FiLogOut className="w-5 h-5" /> Log out
-          </button>
         </div>
       )}
     </nav>

@@ -8,6 +8,8 @@ from api.user import router as user_router
 from api.travel import router as travel_router
 from api.trips import router as trips_router
 from api.admin import router as admin_router
+from api.interactions import router as interactions_router
+from api.cf import router as cf_router
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -44,6 +46,8 @@ app.include_router(user_router)
 app.include_router(travel_router)
 app.include_router(trips_router)
 app.include_router(admin_router)
+app.include_router(interactions_router)
+app.include_router(cf_router)
 
 
 @app.get("/")

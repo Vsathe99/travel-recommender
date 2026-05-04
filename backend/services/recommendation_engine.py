@@ -64,14 +64,15 @@ Respond ONLY with a JSON array in this exact format:
     
     # Needs geocode_city import from map_service
     from services.map_service import geocode_city
+    from database.mongodb import get_db
     
     for item in ranked:
         dest_name = item.get("destination", "")
         country = item.get("country", "")
         search_query = f"{dest_name}, {country}" if country else dest_name
         
-        # Geocode
-        geo = await geocode_city(search_query)
+        # Geocode with country hint for disambiguation
+        geo = await geocode_city(dest_name, country_hint=country)
         if geo and "coordinates" in geo:
              item["coordinates"] = geo["coordinates"]
              item["country"] = geo.get("country") or country
@@ -80,7 +81,9 @@ Respond ONLY with a JSON array in this exact format:
              
         # Weather
         try:
-             w = await get_current_weather(dest_name)
+             lat = item.get("coordinates", {}).get("lat")
+             lon = item.get("coordinates", {}).get("lng")
+             w = await get_current_weather(dest_name, lat=lat, lon=lon)
              if w:
                  item["weather_suitability"] = get_travel_suitability(w)
              else:
@@ -98,6 +101,30 @@ Respond ONLY with a JSON array in this exact format:
              item["hotels"] = []
              
         item["avg_cost_inr"] = item.get("estimated_cost", 0) / (duration or 1)
+
+        # Save destination to MongoDB catalog for CF training
+        try:
+            db = get_db()
+            if db is not None:
+                existing = await db.destinations.find_one({"name": dest_name, "country": country})
+                if not existing:
+                    dest_doc = {
+                        "name": dest_name,
+                        "country": country,
+                        "travel_type": travel_type,
+                        "budget_tier": "budget" if budget / max(duration, 1) < 5000 else "mid" if budget / max(duration, 1) < 15000 else "luxury",
+                        "climate": preferred_climate or "temperate",
+                        "region": "",
+                        "description": item.get("reason", ""),
+                        "coordinates": item.get("coordinates"),
+                        "avg_cost_per_day": item.get("avg_cost_inr", 0),
+                        "highlights": item.get("highlights", []),
+                    }
+                    await db.destinations.insert_one(dest_doc)
+                    logging.info(f"📍 Saved new destination to catalog: {dest_name}, {country}")
+        except Exception as e:
+            logging.warning(f"Failed to save destination to catalog: {e}")
+
         enriched.append(item)
 
     return enriched

@@ -19,3 +19,7 @@ pytest-asyncio==0.23.7
 httpx==0.27.0
 anyio==4.3.0
 beautifulsoup4==4.12.3
+lightfm==1.17
+scipy==1.13.0
+numpy==1.26.4
+scikit-learn==1.5.0

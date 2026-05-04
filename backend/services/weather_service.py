@@ -10,9 +10,12 @@ OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "")
 OPENWEATHER_BASE = "https://api.openweathermap.org/data/2.5"
 
 
-async def get_current_weather(city: str) -> Optional[Dict[str, Any]]:
+async def get_current_weather(city: str, lat: float = None, lon: float = None) -> Optional[Dict[str, Any]]:
     """Fetch current weather for a city using OpenWeatherMap."""
     cache_key = f"weather:{city.lower()}"
+    if lat is not None and lon is not None:
+        cache_key = f"weather:{round(lat, 2)}:{round(lon, 2)}"
+        
     cached = await get_cached(cache_key)
     if cached:
         return cached
@@ -22,9 +25,16 @@ async def get_current_weather(city: str) -> Optional[Dict[str, Any]]:
 
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
+            params = {"appid": OPENWEATHER_API_KEY, "units": "metric"}
+            if lat is not None and lon is not None:
+                params["lat"] = lat
+                params["lon"] = lon
+            else:
+                params["q"] = city
+                
             response = await client.get(
                 f"{OPENWEATHER_BASE}/weather",
-                params={"q": city, "appid": OPENWEATHER_API_KEY, "units": "metric"},
+                params=params,
             )
             response.raise_for_status()
             data = response.json()
@@ -49,9 +59,12 @@ async def get_current_weather(city: str) -> Optional[Dict[str, Any]]:
     return result
 
 
-async def get_forecast(city: str) -> Optional[List[Dict[str, Any]]]:
+async def get_forecast(city: str, lat: float = None, lon: float = None) -> Optional[List[Dict[str, Any]]]:
     """Fetch 5-day / 3-hour forecast for a city."""
     cache_key = f"forecast:{city.lower()}"
+    if lat is not None and lon is not None:
+        cache_key = f"forecast:{round(lat, 2)}:{round(lon, 2)}"
+        
     cached = await get_cached(cache_key)
     if cached:
         return cached
@@ -61,9 +74,16 @@ async def get_forecast(city: str) -> Optional[List[Dict[str, Any]]]:
 
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
+            params = {"appid": OPENWEATHER_API_KEY, "units": "metric", "cnt": 40}
+            if lat is not None and lon is not None:
+                params["lat"] = lat
+                params["lon"] = lon
+            else:
+                params["q"] = city
+                
             response = await client.get(
                 f"{OPENWEATHER_BASE}/forecast",
-                params={"q": city, "appid": OPENWEATHER_API_KEY, "units": "metric", "cnt": 40},
+                params=params,
             )
             response.raise_for_status()
             data = response.json()

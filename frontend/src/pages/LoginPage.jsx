@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
-import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi'
+import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight } from 'react-icons/fi'
 
 export default function LoginPage() {
   const { login } = useAuth()
@@ -26,72 +26,58 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-950 flex items-center justify-center px-4">
-      {/* Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-primary-600/15 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-ocean-500/15 rounded-full blur-3xl" />
-      </div>
+    <div className="min-h-screen flex items-center justify-center px-4 relative" style={{ background: '#f5f3f0' }}>
+      {/* Decorative blobs */}
+      <div className="absolute top-20 left-[15%] w-72 h-72 rounded-full bg-gradient-to-br from-indigo-400/15 to-violet-400/10 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-20 right-[10%] w-64 h-64 rounded-full bg-gradient-to-br from-amber-300/10 to-rose-300/10 blur-3xl pointer-events-none" />
 
-      <div className="relative w-full max-w-md">
+      <div className="relative w-full max-w-[420px]">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2">
+        <div className="text-center mb-10">
+          <Link to="/" className="inline-flex items-center gap-2 mb-6">
             <span className="text-3xl">✈️</span>
-            <span className="font-display font-bold text-2xl text-gradient">SmartTravel</span>
+            <span className="font-helvetica font-bold text-xl text-gradient">SmartTravel</span>
           </Link>
-          <h1 className="text-2xl font-display font-bold text-white mt-4">Welcome back</h1>
-          <p className="text-white/50 mt-1.5">Sign in to continue planning your adventures</p>
+          <h1 className="text-3xl font-bold text-[#1a1c2e] tracking-tight">Welcome back</h1>
+          <p className="text-[#2d3142]/40 mt-2 text-sm">Sign in to continue your journey</p>
         </div>
 
-        <div className="glass-card p-8 space-y-5">
+        <div className="glass-gradient p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-white/70 text-sm font-medium mb-1.5">Email</label>
+              <label className="block text-[#2d3142]/60 text-xs font-semibold uppercase tracking-wider mb-2">Email</label>
               <div className="relative">
-                <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                <input
-                  type="email" required autoComplete="email"
-                  placeholder="you@example.com"
+                <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2d3142]/25" />
+                <input type="email" required autoComplete="email" placeholder="you@example.com"
                   value={form.email}
                   onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))}
-                  className="input-field pl-10"
-                />
+                  className="input-field pl-11" />
               </div>
             </div>
 
             <div>
-              <label className="block text-white/70 text-sm font-medium mb-1.5">Password</label>
+              <label className="block text-[#2d3142]/60 text-xs font-semibold uppercase tracking-wider mb-2">Password</label>
               <div className="relative">
-                <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                <input
-                  type={showPw ? 'text' : 'password'} required
-                  placeholder="••••••••"
+                <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2d3142]/25" />
+                <input type={showPw ? 'text' : 'password'} required placeholder="••••••••"
                   value={form.password}
                   onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))}
-                  className="input-field pl-10 pr-10"
-                />
+                  className="input-field pl-11 pr-11" />
                 <button type="button" onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60">
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#2d3142]/25 hover:text-[#2d3142]/50 transition-colors">
                   {showPw ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            <div className="flex justify-end">
-              <Link to="/reset-password" className="text-sm text-primary-400 hover:text-primary-300">
-                Forgot password?
-              </Link>
-            </div>
-
-            <button type="submit" disabled={loading} className="btn-primary w-full py-3.5">
-              {loading ? <span className="spinner w-5 h-5 inline-block" /> : 'Sign In'}
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3">
+              {loading ? <span className="spinner w-5 h-5" /> : <>Sign In <FiArrowRight className="w-4 h-4" /></>}
             </button>
           </form>
 
-          <div className="text-center text-sm text-white/50">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-primary-400 hover:text-primary-300 font-medium">
+          <div className="mt-6 pt-5 border-t border-black/[0.04] text-center">
+            <span className="text-sm text-[#2d3142]/40">No account? </span>
+            <Link to="/register" className="text-sm text-indigo-500 hover:text-indigo-600 font-semibold transition-colors">
               Sign up free
             </Link>
           </div>

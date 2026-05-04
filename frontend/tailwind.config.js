@@ -6,6 +6,7 @@ export default {
             fontFamily: {
                 sans: ['Inter', 'system-ui', 'sans-serif'],
                 display: ['Outfit', 'sans-serif'],
+                helvetica: ['"Helvetica Regular"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
             },
             colors: {
                 primary: {

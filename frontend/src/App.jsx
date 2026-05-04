@@ -22,10 +22,13 @@ export default function App() {
           position="top-right"
           toastOptions={{
             style: {
-              background: '#1e293b',
-              color: '#fff',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: '12px',
+              background: 'rgba(255,255,255,0.88)',
+              backdropFilter: 'blur(20px) saturate(180%)',
+              color: '#2d3142',
+              border: '1px solid rgba(255,255,255,0.6)',
+              borderRadius: '14px',
+              boxShadow: '0 8px 32px rgba(45,49,66,0.08)',
+              fontSize: '14px',
             },
             success: { iconTheme: { primary: '#10b981', secondary: '#fff' } },
             error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },

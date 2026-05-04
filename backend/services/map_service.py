@@ -12,9 +12,20 @@ print("MAPBOX_API_KEY:", MAPBOX_API_KEY)
 MAPBOX_BASE_URL = "https://api.mapbox.com"
 
 
-async def geocode_city(city: str) -> Optional[Dict[str, Any]]:
-    """Get coordinates and metadata for a city using Mapbox Geocoding API."""
-    cache_key = f"geocode:{city.lower()}"
+async def geocode_city(city: str, country_hint: str = "") -> Optional[Dict[str, Any]]:
+    """Get coordinates and metadata for a city using Mapbox Geocoding API.
+    
+    Args:
+        city: The city/place name to geocode.
+        country_hint: Optional country name to help disambiguate locations
+                      (e.g. 'India' to ensure Alibaug Beach resolves in India).
+    """
+    # Build a search query that includes country for disambiguation
+    search_query = city
+    if country_hint and country_hint.strip():
+        search_query = f"{city}, {country_hint.strip()}"
+
+    cache_key = f"geocode:{search_query.lower()}"
     cached = await get_cached(cache_key)
     if cached:
         return cached
@@ -22,10 +33,10 @@ async def geocode_city(city: str) -> Optional[Dict[str, Any]]:
     if not MAPBOX_API_KEY:
         return {"name": city, "coordinates": {"lat": 0.0, "lng": 0.0}, "country": ""}
 
-    url = f"{MAPBOX_BASE_URL}/geocoding/v5/mapbox.places/{city}.json"
+    url = f"{MAPBOX_BASE_URL}/geocoding/v5/mapbox.places/{search_query}.json"
     params = {
         "access_token": MAPBOX_API_KEY,
-        "types": "place,locality",
+        "types": "place,locality,poi,neighborhood",
         "limit": 1,
     }
 
@@ -41,12 +52,16 @@ async def geocode_city(city: str) -> Optional[Dict[str, Any]]:
     feature = features[0]
     coords = feature["geometry"]["coordinates"]
     context = feature.get("context", [])
-    country = next((c["text"] for c in context if c["id"].startswith("country")), "")
+    resolved_country = next((c["text"] for c in context if c["id"].startswith("country")), "")
+
+    # For POI-type results, the country might be embedded in place_name rather than context
+    if not resolved_country and country_hint:
+        resolved_country = country_hint.strip()
 
     result = {
         "name": feature["place_name"],
         "city": city,
-        "country": country,
+        "country": resolved_country,
         "coordinates": {"lat": coords[1], "lng": coords[0]},
         "mapbox_id": feature.get("id"),
         "place_type": feature.get("place_type", []),

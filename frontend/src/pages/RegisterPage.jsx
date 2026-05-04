@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
-import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi'
+import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight } from 'react-icons/fi'
 
 export default function RegisterPage() {
   const { register } = useAuth()
@@ -13,14 +13,8 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (form.password !== form.confirm) {
-      toast.error('Passwords do not match')
-      return
-    }
-    if (form.password.length < 6) {
-      toast.error('Password must be at least 6 characters')
-      return
-    }
+    if (form.password !== form.confirm) return toast.error('Passwords do not match')
+    if (form.password.length < 6) return toast.error('Password must be at least 6 characters')
     setLoading(true)
     try {
       await register(form.name, form.email, form.password)
@@ -28,82 +22,79 @@ export default function RegisterPage() {
       navigate('/recommend')
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Registration failed')
-    } finally {
-      setLoading(false)
-    }
+    } finally { setLoading(false) }
   }
 
-  return (
-    <div className="min-h-screen bg-dark-950 flex items-center justify-center px-4 py-12">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 right-1/4 w-80 h-80 bg-primary-600/15 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-ocean-500/15 rounded-full blur-3xl" />
-      </div>
+  const fields = [
+    { field: 'name', label: 'Full Name', type: 'text', icon: FiUser, placeholder: 'Your Name' },
+    { field: 'email', label: 'Email', type: 'email', icon: FiMail, placeholder: 'you@example.com' },
+  ]
 
-      <div className="relative w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2">
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative" style={{ background: '#f5f3f0' }}>
+      <div className="absolute top-16 right-[20%] w-80 h-80 rounded-full bg-gradient-to-br from-violet-400/12 to-indigo-400/10 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-16 left-[15%] w-60 h-60 rounded-full bg-gradient-to-br from-teal-300/10 to-emerald-300/10 blur-3xl pointer-events-none" />
+
+      <div className="relative w-full max-w-[420px]">
+        <div className="text-center mb-10">
+          <Link to="/" className="inline-flex items-center gap-2 mb-6">
             <span className="text-3xl">✈️</span>
-            <span className="font-display font-bold text-2xl text-gradient">SmartTravel</span>
+            <span className="font-helvetica font-bold text-xl text-gradient">SmartTravel</span>
           </Link>
-          <h1 className="text-2xl font-display font-bold text-white mt-4">Create your account</h1>
-          <p className="text-white/50 mt-1.5">Start planning AI-powered trips for free</p>
+          <h1 className="text-3xl font-bold text-[#1a1c2e] tracking-tight">Create your account</h1>
+          <p className="text-[#2d3142]/40 mt-2 text-sm">Start planning AI-powered trips for free</p>
         </div>
 
-        <div className="glass-card p-8">
+        <div className="glass-gradient p-8">
           <form onSubmit={handleSubmit} className="space-y-4">
-            {[
-              { field: 'name', label: 'Full Name', type: 'text', icon: FiUser, placeholder: 'Your Name' },
-              { field: 'email', label: 'Email', type: 'email', icon: FiMail, placeholder: 'you@example.com' },
-            ].map(({ field, label, type, icon: Icon, placeholder }) => (
+            {fields.map(({ field, label, type, icon: Icon, placeholder }) => (
               <div key={field}>
-                <label className="block text-white/70 text-sm font-medium mb-1.5">{label}</label>
+                <label className="block text-[#2d3142]/60 text-xs font-semibold uppercase tracking-wider mb-2">{label}</label>
                 <div className="relative">
-                  <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                  <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2d3142]/25" />
                   <input type={type} required placeholder={placeholder}
                     value={form[field]}
                     onChange={(e) => setForm(f => ({ ...f, [field]: e.target.value }))}
-                    className="input-field pl-10" />
+                    className="input-field pl-11" />
                 </div>
               </div>
             ))}
 
-            {/* Password */}
             <div>
-              <label className="block text-white/70 text-sm font-medium mb-1.5">Password</label>
+              <label className="block text-[#2d3142]/60 text-xs font-semibold uppercase tracking-wider mb-2">Password</label>
               <div className="relative">
-                <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2d3142]/25" />
                 <input type={showPw ? 'text' : 'password'} required placeholder="Min. 6 characters"
                   value={form.password}
                   onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))}
-                  className="input-field pl-10 pr-10" />
+                  className="input-field pl-11 pr-11" />
                 <button type="button" onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60">
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#2d3142]/25 hover:text-[#2d3142]/50 transition-colors">
                   {showPw ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
             <div>
-              <label className="block text-white/70 text-sm font-medium mb-1.5">Confirm Password</label>
+              <label className="block text-[#2d3142]/60 text-xs font-semibold uppercase tracking-wider mb-2">Confirm</label>
               <div className="relative">
-                <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2d3142]/25" />
                 <input type={showPw ? 'text' : 'password'} required placeholder="Repeat password"
                   value={form.confirm}
                   onChange={(e) => setForm(f => ({ ...f, confirm: e.target.value }))}
-                  className="input-field pl-10" />
+                  className="input-field pl-11" />
               </div>
             </div>
 
-            <button type="submit" disabled={loading} className="btn-primary w-full py-3.5 mt-2">
-              {loading ? <span className="spinner w-5 h-5 inline-block" /> : 'Create Account'}
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3 mt-1">
+              {loading ? <span className="spinner w-5 h-5" /> : <>Create Account <FiArrowRight className="w-4 h-4" /></>}
             </button>
           </form>
 
-          <p className="text-center text-sm text-white/50 mt-5">
-            Already have an account?{' '}
-            <Link to="/login" className="text-primary-400 hover:text-primary-300 font-medium">Sign in</Link>
-          </p>
+          <div className="mt-6 pt-5 border-t border-black/[0.04] text-center">
+            <span className="text-sm text-[#2d3142]/40">Have an account? </span>
+            <Link to="/login" className="text-sm text-indigo-500 hover:text-indigo-600 font-semibold transition-colors">Sign in</Link>
+          </div>
         </div>
       </div>
     </div>

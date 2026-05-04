@@ -1,62 +1,61 @@
 import { FiCalendar, FiInfo, FiMapPin } from 'react-icons/fi'
 
-function DayCard({ day }) {
+function DayCard({ day, index }) {
   return (
-    <div className="glass-card p-5 space-y-4">
-      {/* Day header */}
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-600 to-ocean-500 flex items-center justify-center font-bold text-sm shrink-0">
+    <div className="relative flex gap-5">
+      {/* Timeline line */}
+      <div className="flex flex-col items-center shrink-0">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-sm font-bold text-white shadow-lg shadow-indigo-500/20">
           {day.day}
         </div>
-        <div>
-          <h4 className="font-semibold text-white">{day.title}</h4>
-          {day.theme && <p className="text-white/50 text-xs">{day.theme}</p>}
-        </div>
-        {day.estimated_cost && (
-          <div className="ml-auto flex items-center gap-1 text-green-400 text-sm">
-            <span className="font-bold">₹</span>
-            {day.estimated_cost}
-          </div>
-        )}
+        <div className="w-px flex-1 bg-gradient-to-b from-indigo-200 to-transparent mt-2 min-h-[20px]" />
       </div>
 
-      {/* Activities */}
-      <ul className="space-y-2">
-        {(day.activities || []).map((activity, i) => (
-          <li key={i} className="flex items-start gap-2 text-sm text-white/70">
-            <span className="w-1.5 h-1.5 rounded-full bg-ocean-400 mt-2 shrink-0" />
-            {activity}
-          </li>
-        ))}
-      </ul>
-
-      {/* Meals */}
-      {day.meals && Object.keys(day.meals).length > 0 && (
-        <div className="bg-white/5 rounded-xl p-3 space-y-1.5">
-          <p className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2">Meals</p>
-          {Object.entries(day.meals).map(([meal, desc]) => (
-            <div key={meal} className="flex gap-2 text-sm">
-              <span className="text-primary-400 capitalize min-w-[80px]">{meal}:</span>
-              <span className="text-white/60">{desc}</span>
-            </div>
-          ))}
+      {/* Content */}
+      <div className="pb-8 flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="font-bold text-[#1a1c2e]">{day.title}</h4>
+          {day.estimated_cost && (
+            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">₹{day.estimated_cost}</span>
+          )}
         </div>
-      )}
 
-      {/* Accommodation & Tips */}
-      <div className="grid grid-cols-2 gap-3">
-        {day.accommodation && (
-          <div className="flex items-start gap-2 text-sm text-white/60">
-            <FiMapPin className="w-3.5 h-3.5 text-ocean-400 mt-0.5 shrink-0" />
-            {day.accommodation}
+        {day.theme && <p className="text-xs text-[#2d3142]/35 mb-3 italic">— {day.theme}</p>}
+
+        {/* Activities */}
+        <ul className="space-y-2 mb-4">
+          {(day.activities || []).map((activity, i) => (
+            <li key={i} className="flex items-start gap-2.5 text-sm text-[#2d3142]/60">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-2 shrink-0" />
+              {activity}
+            </li>
+          ))}
+        </ul>
+
+        {/* Meals */}
+        {day.meals && Object.keys(day.meals).length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {Object.entries(day.meals).map(([meal, desc]) => (
+              <span key={meal} className="inline-flex items-center gap-1.5 text-xs bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full">
+                <span className="font-semibold capitalize">{meal}:</span> {desc}
+              </span>
+            ))}
           </div>
         )}
-        {day.tips && (
-          <div className="flex items-start gap-2 text-sm text-white/60">
-            <FiInfo className="w-3.5 h-3.5 text-sunset-400 mt-0.5 shrink-0" />
-            {day.tips}
-          </div>
-        )}
+
+        {/* Accommodation & Tips */}
+        <div className="flex flex-wrap gap-3">
+          {day.accommodation && (
+            <span className="inline-flex items-center gap-1 text-xs text-[#2d3142]/40">
+              <FiMapPin className="w-3 h-3 text-cyan-500" /> {day.accommodation}
+            </span>
+          )}
+          {day.tips && (
+            <span className="inline-flex items-center gap-1 text-xs text-[#2d3142]/40">
+              <FiInfo className="w-3 h-3 text-amber-500" /> {day.tips}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -64,22 +63,20 @@ function DayCard({ day }) {
 
 export default function ItineraryView({ itinerary = [], destination }) {
   if (!itinerary.length) return (
-    <div className="glass-card p-8 text-center text-white/40">
-      No itinerary generated yet
-    </div>
+    <div className="py-20 text-center text-[#2d3142]/30 text-sm">No itinerary generated yet</div>
   )
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-6">
-        <FiCalendar className="w-5 h-5 text-primary-400" />
-        <h3 className="font-display font-bold text-xl text-white">
-          {itinerary.length}-Day Itinerary for {destination}
-        </h3>
+    <div className="animate-slide-up">
+      <h3 className="text-lg font-bold text-[#1a1c2e] mb-8 flex items-center gap-2">
+        <FiCalendar className="w-5 h-5 text-indigo-500" />
+        {itinerary.length}-Day Itinerary for {destination}
+      </h3>
+      <div className="pl-1">
+        {itinerary.map((day, i) => (
+          <DayCard key={i} day={day} index={i} />
+        ))}
       </div>
-      {itinerary.map((day, i) => (
-        <DayCard key={i} day={day} />
-      ))}
     </div>
   )
 }

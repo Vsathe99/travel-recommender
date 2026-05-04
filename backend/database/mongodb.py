@@ -18,7 +18,11 @@ async def connect_db():
     # Create indexes
     await db.users.create_index("email", unique=True)
     await db.destinations.create_index("name")
+    await db.destinations.create_index([("name", 1), ("country", 1)])
     await db.trips.create_index("user_id")
+    await db.interactions.create_index("user_id")
+    await db.interactions.create_index("destination_id")
+    await db.interactions.create_index([("user_id", 1), ("destination_id", 1)])
     print(f"✅ Connected to MongoDB: {DATABASE_NAME}")
 
 
